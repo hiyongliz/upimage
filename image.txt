@@ -1,0 +1,17 @@
+# Docker images to sync to Huawei Cloud SWR
+# Format: one image per line
+# Comments start with # and will be ignored
+# Empty lines are also ignored
+
+# Web servers
+nginx:1.28
+nginx:latest
+
+# Example of images with custom registries
+# redis:7.0
+# postgres:15
+# mysql:8.0
+
+# Example of images with full registry paths
+# docker.io/library/alpine:latest
+# quay.io/prometheus/prometheus:latest

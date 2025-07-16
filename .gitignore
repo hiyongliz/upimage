@@ -1,0 +1,121 @@
+# Binaries for programs and plugins
+upimage
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output directory
+dist/
+build/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+coverage.out
+coverage.html
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+*.tmp
+*.temp
+desktop.ini
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Logs
+*.log
+logs/
+sync-*.txt
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Test coverage reports
+*.coverprofile
+coverage/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# CI/CD cache
+.cache/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Documentation build
+docs/_build/
+site/
+
+# Local configuration files
+config.local.*
+*.local
+
+# Development tools
+.air.toml
+air_tmp/
+
+# Certificates and keys (if any)
+*.pem
+*.key
+*.crt
+*.p12
+
+# Docker
+.dockerignore.bak
+
+# Kubernetes
+*.kubeconfig
+
+# Cloud provider credentials (just in case)
+credentials.json
+service-account.json
+*.credentials
+
+# Local testing images list
+images-test.txt
+images-local.txt
+test-*.txt

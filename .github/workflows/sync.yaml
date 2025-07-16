@@ -1,0 +1,155 @@
+name: Sync Docker Images to SWR
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'image.txt'
+      - '.github/workflows/sync.yaml'
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'Target SWR region'
+        required: false
+        default: 'cn-south-1'
+        type: choice
+        options:
+          - cn-south-1
+          - cn-north-4
+          - cn-east-3
+          - cn-east-2
+          - cn-north-1
+          - cn-southwest-2
+      image_file:
+        description: 'Image list file path'
+        required: false
+        default: 'image.txt'
+
+env:
+  GO_VERSION: '1.24'
+  REGION: ${{ github.event.inputs.region || 'cn-south-1' }}
+  IMAGE_FILE: ${{ github.event.inputs.image_file || 'image.txt' }}
+
+jobs:
+  validate:
+    name: Validate Images
+    runs-on: ubuntu-latest
+    outputs:
+      image-count: ${{ steps.count.outputs.count }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate image list file
+        run: |
+          if [[ ! -f "$IMAGE_FILE" ]]; then
+            echo "Error: Image list file $IMAGE_FILE not found"
+            exit 1
+          fi
+          
+          # Count non-empty, non-comment lines
+          count=$(grep -v '^[[:space:]]*$' "$IMAGE_FILE" | grep -v '^[[:space:]]*#' | wc -l)
+          echo "Found $count images to sync"
+          
+          if [[ $count -eq 0 ]]; then
+            echo "Warning: No images found in $IMAGE_FILE"
+            exit 1
+          fi
+
+      - name: Set image count output
+        id: count
+        run: |
+          count=$(grep -v '^[[:space:]]*$' "$IMAGE_FILE" | grep -v '^[[:space:]]*#' | wc -l)
+          echo "count=$count" >> $GITHUB_OUTPUT
+
+  sync:
+    name: Sync Images
+    runs-on: ubuntu-latest
+    needs: validate
+    if: needs.validate.outputs.image-count > 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Verify dependencies
+        run: |
+          go mod verify
+          go mod download
+
+      - name: Run tests
+        run: go test -v ./...
+
+      - name: Build upimage binary
+        run: |
+          make build
+          chmod +x upimage
+
+      - name: Verify binary
+        run: |
+          ./upimage --help
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Huawei Cloud SWR
+        run: |
+          echo "Logging in to SWR registry..."
+          docker login -u "cn-south-1@${{ secrets.SWR_REGISTRY_USER }}" \
+                       -p "${{ secrets.SWR_REGISTRY_PASSWORD }}" \
+                       "${{ vars.SWR_REGISTRY_SERVER }}"
+
+      - name: Sync images to SWR
+        env:
+          HUAWEICLOUD_SDK_AK: ${{ secrets.HUAWEICLOUD_SDK_AK }}
+          HUAWEICLOUD_SDK_SK: ${{ secrets.HUAWEICLOUD_SDK_SK }}
+        run: |
+          echo "Starting image sync process..."
+          echo "Target region: $REGION"
+          echo "Image file: $IMAGE_FILE"
+          echo "Total images to sync: ${{ needs.validate.outputs.image-count }}"
+          echo
+          
+          chmod +x sync.sh
+          ./sync.sh "$IMAGE_FILE" "$REGION"
+
+      - name: Upload sync logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-logs-${{ github.run_number }}
+          path: |
+            *.log
+            sync-*.txt
+          retention-days: 7
+
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [validate, sync]
+    if: always()
+    steps:
+      - name: Notify success
+        if: needs.sync.result == 'success'
+        run: |
+          echo "✅ Successfully synced ${{ needs.validate.outputs.image-count }} images to region ${{ env.REGION }}"
+
+      - name: Notify failure
+        if: needs.sync.result == 'failure'
+        run: |
+          echo "❌ Failed to sync images to region ${{ env.REGION }}"
+          echo "Please check the workflow logs for details"
+          exit 1
