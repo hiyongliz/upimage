@@ -11,7 +11,7 @@ CGO_ENABLED=0
 GO111MODULE=on
 
 # Build flags
-LDFLAGS=-ldflags "-s -w -X upimage/cmd.Version=$(VERSION) -X upimage/cmd.BuildTime=$(BUILD_TIME) -X upimage/cmd.CommitSHA=$(COMMIT_SHA)"
+LDFLAGS=-ldflags "-s -w -X github.com/hiyongliz/upimage/cmd.Version=$(VERSION) -X github.com/hiyongliz/upimage/cmd.BuildTime=$(BUILD_TIME) -X github.com/hiyongliz/upimage/cmd.CommitSHA=$(COMMIT_SHA)"
 
 # Default target
 .DEFAULT_GOAL := help

@@ -15,12 +15,6 @@ If you need to pull from private registries:
 - `SWR_REGISTRY_USER`: SWR registry username
 - `SWR_REGISTRY_PASSWORD`: SWR registry password
 
-## Repository Variables
-
-Configure the following variables in your repository settings:
-
-- `SWR_REGISTRY_SERVER`: SWR registry server (e.g., `swr.cn-south-1.myhuaweicloud.com`)
-
 ## Workflow Triggers
 
 The sync workflow can be triggered in several ways:
