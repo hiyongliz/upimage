@@ -110,7 +110,7 @@ jobs:
           echo "Logging in to SWR registry..."
           docker login -u "cn-south-1@${{ secrets.SWR_REGISTRY_USER }}" \
                        -p "${{ secrets.SWR_REGISTRY_PASSWORD }}" \
-                       "${{ vars.SWR_REGISTRY_SERVER }}"
+                       "swr.cn-south-1.myhuaweicloud.com"
 
       - name: Sync images to SWR
         env:
