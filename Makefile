@@ -23,7 +23,7 @@ help: ## Display this help message
 
 .PHONY: build
 build: ## Build the binary for current platform
-	CGO_ENABLED=$(CGO_ENABLED) GO111MODULE=$(GO111MODULE) go build $(LDFLAGS) -o $(BINARY_NAME) main.go
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=$(CGO_ENABLED) GO111MODULE=$(GO111MODULE) go build $(LDFLAGS) -o $(BINARY_NAME) main.go
 
 .PHONY: bin
 bin: build ## Alias for build (backward compatibility)
