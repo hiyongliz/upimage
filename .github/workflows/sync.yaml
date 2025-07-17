@@ -23,7 +23,7 @@ on:
       namespace:
         description: 'Target namespace'
         required: false
-        default: 'default'
+        default: 'lazylibrary'
       image_file:
         description: 'Image list file path'
         required: false
