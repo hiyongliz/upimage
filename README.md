@@ -2,6 +2,10 @@
 
 一个简单高效的命令行工具，用于自动化上传Docker镜像到多个云容器镜像仓库。支持华为云SWR、阿里云ACR、腾讯云TCR等云服务商。
 
+**📖 文档语言 / Documentation Languages:**
+- [中文文档](README.md) (当前页面)
+- [English Documentation](README_EN.md)
+
 > **⚠️ 声明**: 本README文档由AI生成，可能存在不准确或过时的信息。如果在使用过程中遇到问题，请通过 [Issues](https://github.com/hiyongliz/upimage/issues) 反馈，我们会及时更正和完善文档。
 
 ## 功能特性
