@@ -15,6 +15,12 @@ If you need to pull from private registries:
 - `SWR_REGISTRY_USER`: SWR registry username
 - `SWR_REGISTRY_PASSWORD`: SWR registry password
 
+## Repository Variables
+
+Configure the following variables in your repository settings:
+
+- `SWR_REGISTRY_SERVER`: SWR registry server (e.g., `swr.cn-south-1.myhuaweicloud.com`)
+
 ## Workflow Triggers
 
 The sync workflow can be triggered in several ways:
@@ -26,6 +32,7 @@ The sync workflow can be triggered in several ways:
 ### 2. Manual Trigger
 - **Workflow Dispatch**: Manually trigger from GitHub Actions tab with custom parameters:
   - Target region selection
+  - Target namespace (default: "default")
   - Custom image file path
 
 ## Workflow Jobs
@@ -45,7 +52,7 @@ The sync workflow can be triggered in several ways:
 
 ### 3. Notify Job
 - Provides clear success/failure notifications
-- Includes image count and target region information
+- Includes image count, target region, and namespace information
 
 ## Image List Format
 
@@ -55,13 +62,26 @@ The `image.txt` file supports:
 # Comments start with # and are ignored
 # Empty lines are also ignored
 
-# Basic image names
+# Basic image names (will use specified namespace)
 nginx:latest
 redis:7.0
 
-# Images with registry
+# Images with registry (namespace from command line)
 docker.io/library/alpine:latest
 quay.io/prometheus/prometheus:latest
+```
+
+## Configuration Options
+
+### Command Line Parameters
+- `--region, -r`: Target SWR region
+- `--namespace, -n`: Target namespace
+- `--create-namespace`: Auto-create namespace if not exists
+- `--public`: Set repository as public
+
+### Batch Script Parameters
+```bash
+./sync.sh [image_file] [region] [namespace]
 ```
 
 ## Monitoring and Debugging
@@ -82,11 +102,12 @@ quay.io/prometheus/prometheus:latest
 
 ## Best Practices
 
-1. **Test Locally First**: Always test your image list with `./sync.sh` locally before pushing
+1. **Test Locally First**: Always test your image list locally before pushing
 2. **Small Batches**: Keep image lists manageable (< 50 images per run)
 3. **Monitor Usage**: Check your Huawei Cloud SWR quotas and usage
 4. **Security**: Never commit credentials to the repository
 5. **Regions**: Use the closest region for better performance
+6. **Namespaces**: Plan your namespace structure for better organization
 
 ## Troubleshooting
 
@@ -106,7 +127,7 @@ quay.io/prometheus/prometheus:latest
 
 3. **Authentication Failed**
    ```
-   Error: failed to create credentials
+   Error initializing upimage: failed to create credentials
    ```
    Solution: Verify your AK/SK credentials are correct
 
@@ -115,6 +136,12 @@ quay.io/prometheus/prometheus:latest
    Error: pull access denied
    ```
    Solution: Ensure the image exists and you have access permissions
+
+5. **Namespace Issues**
+   ```
+   failed to create namespace
+   ```
+   Solution: Check if you have permissions to create namespaces in SWR
 
 ### Getting Help
 

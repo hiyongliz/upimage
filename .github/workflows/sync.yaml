@@ -20,6 +20,10 @@ on:
           - cn-east-2
           - cn-north-1
           - cn-southwest-2
+      namespace:
+        description: 'Target namespace'
+        required: false
+        default: 'default'
       image_file:
         description: 'Image list file path'
         required: false
@@ -28,6 +32,7 @@ on:
 env:
   GO_VERSION: '1.24'
   REGION: ${{ github.event.inputs.region || 'cn-south-1' }}
+  NAMESPACE: ${{ github.event.inputs.namespace || 'default' }}
   IMAGE_FILE: ${{ github.event.inputs.image_file || 'image.txt' }}
 
 jobs:
@@ -119,12 +124,13 @@ jobs:
         run: |
           echo "Starting image sync process..."
           echo "Target region: $REGION"
+          echo "Target namespace: $NAMESPACE"
           echo "Image file: $IMAGE_FILE"
           echo "Total images to sync: ${{ needs.validate.outputs.image-count }}"
           echo
           
           chmod +x sync.sh
-          ./sync.sh "$IMAGE_FILE" "$REGION"
+          ./sync.sh "$IMAGE_FILE" "$REGION" "$NAMESPACE"
 
       - name: Upload sync logs
         if: always()
@@ -145,11 +151,11 @@ jobs:
       - name: Notify success
         if: needs.sync.result == 'success'
         run: |
-          echo "✅ Successfully synced ${{ needs.validate.outputs.image-count }} images to region ${{ env.REGION }}"
+          echo "✅ Successfully synced ${{ needs.validate.outputs.image-count }} images to namespace ${{ env.NAMESPACE }} in region ${{ env.REGION }}"
 
       - name: Notify failure
         if: needs.sync.result == 'failure'
         run: |
-          echo "❌ Failed to sync images to region ${{ env.REGION }}"
+          echo "❌ Failed to sync images to namespace ${{ env.NAMESPACE }} in region ${{ env.REGION }}"
           echo "Please check the workflow logs for details"
           exit 1

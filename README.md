@@ -7,11 +7,12 @@
 ## 功能特性
 
 - 🚀 **一键上传**: 单一命令完成镜像拉取、标记、推送的完整流程
-- 🔄 **自动化流程**: 自动创建命名空间、设置仓库为公开访问
-- 🎯 **智能解析**: 自动解析镜像名称，提取命名空间、仓库名和标签
+- 🔄 **自动化流程**: 可选择自动创建命名空间、设置仓库为公开访问
+- 🎯 **灵活配置**: 支持自定义命名空间、区域、公开设置等选项
 - 🌍 **多区域支持**: 支持华为云所有SWR区域，可通过 `--region` 参数指定
 - 🛡️ **容错处理**: 智能处理已存在的命名空间，避免重复创建错误
 - ⚡ **高效便捷**: 减少手动操作，提升DevOps工作效率
+- 📊 **详细输出**: 实时显示操作进度和状态信息
 
 ## 安装
 
@@ -66,7 +67,7 @@ export HUAWEICLOUD_SDK_SK="your_secret_key"
 
 2. **上传你的第一个镜像**:
    ```bash
-   upimage nginx:latest
+   upimage nginx:latest --namespace myproject
    ```
 
 3. **查看上传的镜像**:
@@ -82,7 +83,10 @@ upimage <image> [flags]
 
 ### 命令行参数
 
-- `--region`: 指定华为云SWR区域（默认: `cn-south-1`）
+- `--region, -r`: 指定华为云SWR区域（默认: `cn-south-1`）
+- `--namespace, -n`: 指定目标命名空间（默认: `default`）
+- `--create-namespace`: 是否自动创建命名空间（默认: `true`）
+- `--public`: 是否将仓库设置为公开（默认: `false`）
 - `--help, -h`: 显示帮助信息
 
 ### 获取帮助
@@ -98,42 +102,68 @@ upimage --version
 ### 示例
 
 ```bash
-# 上传一个标准镜像（使用默认区域）
+# 基本使用 - 上传到默认命名空间
 upimage nginx:1.28
 
-# 上传带命名空间的镜像
-upimage myregistry/myapp:v1.0.0
+# 指定自定义命名空间
+upimage nginx:1.28 --namespace myproject
 
-# 上传镜像（将使用默认latest标签）
-upimage redis
-
-# 指定不同的区域上传镜像
+# 指定不同的区域
 upimage nginx:1.28 --region cn-north-4
 
-# 上传到华东1区域
-upimage myapp:latest --region cn-east-3
+# 上传到自定义命名空间并设置为公开
+upimage nginx:1.28 --namespace myproject --public
+
+# 不自动创建命名空间（命名空间必须已存在）
+upimage nginx:1.28 --namespace existing-ns --create-namespace=false
+
+# 完整配置示例
+upimage nginx:1.28 \
+  --region cn-north-4 \
+  --namespace myproject \
+  --public \
+  --create-namespace
 ```
 
 ### 工作流程
 
-当你执行 `upimage nginx:1.28 --region cn-south-1` 时，工具会自动执行以下步骤：
+当你执行 `upimage nginx:1.28 --namespace myproject --region cn-south-1 --public` 时，工具会自动执行以下步骤：
 
-1. **拉取镜像**: `docker pull nginx:1.28`
-2. **创建命名空间**: 在指定区域的华为云SWR中创建命名空间（如果不存在）
-3. **重新标记**: `docker tag nginx:1.28 swr.cn-south-1.myhuaweicloud.com/nginx/nginx:1.28`
-4. **推送镜像**: `docker push swr.cn-south-1.myhuaweicloud.com/nginx/nginx:1.28`
-5. **设置公开**: 将仓库设置为公开访问
+1. **解析镜像信息**: 提取仓库名和标签
+2. **创建命名空间**: 在指定区域的华为云SWR中创建命名空间（如果启用且不存在）
+3. **拉取镜像**: `docker pull nginx:1.28`
+4. **重新标记**: `docker tag nginx:1.28 swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28`
+5. **推送镜像**: `docker push swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28`
+6. **设置权限**: 将仓库设置为公开访问（如果启用）
 
-## 镜像名称解析规则
+### 输出示例
 
-| 输入格式 | 命名空间 | 仓库名 | 标签 |
-|---------|---------|--------|------|
-| `nginx:1.28` | `nginx` | `nginx` | `1.28` |
-| `myapp/redis:latest` | `myapp` | `redis` | `latest` |
-| `redis` | `redis` | `redis` | `latest` |
-| `myregistry/myapp` | `myregistry` | `myapp` | `latest` |
+```
+Processing image: nginx:1.28
+  Namespace: myproject
+  Repository: nginx
+  Tag: 1.28
+  Target region: cn-south-1
+Creating namespace "myproject" if it doesn't exist...
+Pulling image "nginx:1.28"...
+Tagging image as "swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28"...
+Pushing image "swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28" to SWR...
+Setting repository "myproject/nginx" as public...
+✅ Successfully synced image "nginx:1.28" to "swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28"
+```
 
-> **注意**: 如果镜像名称没有明确的命名空间，将使用默认命名空间 `lazylibrary`
+## 镜像名称处理规则
+
+工具现在采用更灵活的命名空间管理方式：
+
+| 输入镜像 | 默认命名空间 | 仓库名 | 标签 | 自定义命名空间 |
+|---------|-------------|--------|------|-------------|
+| `nginx:1.28` | `default` | `nginx` | `1.28` | 使用 `--namespace` 指定 |
+| `redis:latest` | `default` | `redis` | `latest` | 使用 `--namespace` 指定 |
+| `myapp` | `default` | `myapp` | `latest` | 使用 `--namespace` 指定 |
+| `registry.io/myapp:v1.0` | `default` | `myapp` | `v1.0` | 使用 `--namespace` 指定 |
+
+> **重要变更**: 工具不再从镜像名称中自动解析命名空间，而是使用 `--namespace` 参数或默认值 `default`。这提供了更好的控制和一致性。
 
 ## 项目结构
 
@@ -165,23 +195,27 @@ upimage/
 ## 依赖库
 
 - [Cobra](https://github.com/spf13/cobra) - 强大的CLI框架
+- [Fang](https://github.com/charmbracelet/fang) - 优雅的CLI执行器
 - [华为云Go SDK](https://github.com/huaweicloud/huaweicloud-sdk-go-v3) - 华为云服务API客户端
 
 ## 性能和限制
 
 ### 性能特点
-- 🚀 **并发处理**: 支持同时处理多个镜像操作
+- 🚀 **实时反馈**: 详细的操作进度显示，让用户了解当前状态
 - 📦 **增量上传**: 利用Docker分层存储，只上传变更的层
-- 🔄 **断点续传**: 网络中断时自动重试
+- 🔄 **错误恢复**: 详细的错误信息帮助快速定位问题
+- ⚙️ **灵活配置**: 支持多种参数组合满足不同需求
 
 ### 使用限制
 - 镜像大小：单个镜像不超过10GB（华为云SWR限制）
 - 并发数量：建议同时处理的镜像数量不超过5个
 - 网络要求：需要稳定的网络连接到华为云服务
+- 权限要求：需要Docker运行权限和华为云SWR操作权限
 
 ### 最佳实践
 - 使用就近的区域减少网络延迟
-- 合理使用镜像标签避免覆盖
+- 合理规划命名空间结构
+- 根据需要选择是否公开镜像
 - 定期清理不需要的镜像版本
 
 ## 开发
@@ -267,12 +301,17 @@ GOOS=darwin GOARCH=amd64 go build -o upimage-darwin main.go
 
 ### 调试模式
 
-可以通过设置环境变量启用详细日志：
+工具内置了详细的输出信息，无需额外配置：
 
 ```bash
-export DEBUG=true
-upimage nginx:1.28 --region cn-north-4
+upimage nginx:1.28 --namespace myproject --region cn-north-4
 ```
+
+输出将包含：
+- 镜像解析信息
+- 操作步骤进度
+- 错误详情（如果发生）
+- 成功确认信息
 
 ## 贡献
 

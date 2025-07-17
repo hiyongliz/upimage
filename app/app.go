@@ -12,18 +12,25 @@ import (
 
 type Up struct {
 	swrService *swr.SWRService
-	region     string
+	options    *UpOptions
 }
 
-func NewUp(region string) (*Up, error) {
-	SWRAPI, err := swrapi.New(region)
+type UpOptions struct {
+	Region          string
+	Namespace       string
+	Public          bool
+	CreateNamespace bool
+}
+
+func NewUp(options UpOptions) (*Up, error) {
+	SWRAPI, err := swrapi.New(options.Region)
 	if err != nil {
 		return nil, err
 	}
 	SWRService := swr.New(SWRAPI)
 	return &Up{
 		swrService: SWRService,
-		region:     region,
+		options:    &options,
 	}, nil
 }
 
@@ -32,25 +39,27 @@ func (u *Up) Execute(image string) error {
 	if err != nil {
 		return fmt.Errorf("failed to parse repository name from image %q: %w", image, err)
 	}
-	namespace, err := utils.GetNamespaceFromImage(image)
-	if err != nil {
-		return fmt.Errorf("failed to parse namespace from image %q: %w", image, err)
-	}
+	// namespace, err := utils.GetNamespaceFromImage(image)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to parse namespace from image %q: %w", image, err)
+	// }
 	tag, err := utils.GetTagFromImage(image)
 	if err != nil {
 		return fmt.Errorf("failed to parse tag from image %q: %w", image, err)
 	}
 
 	fmt.Printf("Processing image: %s\n", image)
-	fmt.Printf("  Namespace: %s\n", namespace)
+	fmt.Printf("  Namespace: %s\n", u.options.Namespace)
 	fmt.Printf("  Repository: %s\n", repo)
 	fmt.Printf("  Tag: %s\n", tag)
-	fmt.Printf("  Target region: %s\n", u.region)
+	fmt.Printf("  Target region: %s\n", u.options.Region)
 
-	// Create SWR namespace if it doesn't exist
-	fmt.Printf("Creating namespace %q if it doesn't exist...\n", namespace)
-	if err := u.swrService.CreateNamespace(namespace); err != nil {
-		return fmt.Errorf("failed to create namespace %q: %w", namespace, err)
+	if u.options.CreateNamespace {
+		// Create SWR namespace if it doesn't exist
+		fmt.Printf("Creating namespace %q if it doesn't exist...\n", u.options.Namespace)
+		if err := u.swrService.CreateNamespace(u.options.Namespace); err != nil {
+			return fmt.Errorf("failed to create namespace %q: %w", u.options.Namespace, err)
+		}
 	}
 
 	// Download the image
@@ -61,7 +70,7 @@ func (u *Up) Execute(image string) error {
 	}
 
 	// Tag the image
-	newImage := fmt.Sprintf("swr.%s.myhuaweicloud.com/%s/%s:%s", u.region, namespace, repo, tag)
+	newImage := fmt.Sprintf("swr.%s.myhuaweicloud.com/%s/%s:%s", u.options.Region, u.options.Namespace, repo, tag)
 	fmt.Printf("Tagging image as %q...\n", newImage)
 	cmd = exec.Command("docker", "tag", image, newImage)
 	if err := runCmd(cmd); err != nil {
@@ -76,9 +85,9 @@ func (u *Up) Execute(image string) error {
 	}
 
 	// Register the image to SWR
-	fmt.Printf("Setting repository %q/%q as public...\n", namespace, repo)
-	if err := u.swrService.UpdateRepoPublic(namespace, repo); err != nil {
-		return fmt.Errorf("failed to update repository %q/%q to public: %w", namespace, repo, err)
+	fmt.Printf("Setting repository %q/%q as public...\n", u.options.Namespace, repo)
+	if err := u.swrService.UpdateRepoPublic(u.options.Namespace, repo); err != nil {
+		return fmt.Errorf("failed to update repository %q/%q to public: %w", u.options.Namespace, repo, err)
 	}
 
 	fmt.Printf("✅ Successfully synced image %q to %q\n", image, newImage)
