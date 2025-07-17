@@ -168,11 +168,10 @@ upimage nginx:1.28 --registry tcr --namespace myproject
 # 华为云SWR完整配置
 upimage nginx:1.28 \
   --registry swr \
-  --region cn-north-4 \
+  --region cn-north-1 \
   --namespace myproject \
   --public \
   --create-namespace
-```
 ```
 
 ### 工作流程
@@ -222,7 +221,6 @@ Tagging image as "swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28"...
 Pushing image "swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28" to swr...
 Setting repository "myproject"/"nginx" as public...
 ✅ Successfully synced image "nginx:1.28" to "swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28"
-```
 Setting repository "myproject/nginx" as public...
 ✅ Successfully synced image "nginx:1.28" to "swr.cn-south-1.myhuaweicloud.com/myproject/nginx:1.28"
 ```
@@ -462,7 +460,7 @@ GOOS=darwin GOARCH=amd64 go build -o upimage-darwin main.go
 - 多云服务商选择
 - 自定义区域和命名空间
 
-详细配置参见 [.github/README.md](.github/README.md)。
+详细配置参见 [.github/workflows/README.md](.github/workflows/README.md)。
 
 ### 调试模式
 
