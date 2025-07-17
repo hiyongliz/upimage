@@ -20,18 +20,25 @@ type UpOptions struct {
 	Namespace       string
 	Public          bool
 	CreateNamespace bool
+	Registry        string // Added registry field
 }
 
 func NewUp(options UpOptions) (*Up, error) {
-	SWRAPI, err := swrapi.New(options.Region)
-	if err != nil {
-		return nil, err
+	if options.Registry != "swr" {
+		return &Up{
+			options: &options,
+		}, nil
+	} else {
+		SWRAPI, err := swrapi.New(options.Region)
+		if err != nil {
+			return nil, err
+		}
+		SWRService := swr.New(SWRAPI)
+		return &Up{
+			swrService: SWRService,
+			options:    &options,
+		}, nil
 	}
-	SWRService := swr.New(SWRAPI)
-	return &Up{
-		swrService: SWRService,
-		options:    &options,
-	}, nil
 }
 
 func (u *Up) Execute(image string) error {
@@ -69,8 +76,18 @@ func (u *Up) Execute(image string) error {
 		return fmt.Errorf("failed to pull image %q: %w", image, err)
 	}
 
+	newImage := ""
 	// Tag the image
-	newImage := fmt.Sprintf("swr.%s.myhuaweicloud.com/%s/%s:%s", u.options.Region, u.options.Namespace, repo, tag)
+	switch u.options.Registry {
+	case "swr":
+		newImage = fmt.Sprintf("swr.%s.myhuaweicloud.com/%s/%s:%s", u.options.Region, u.options.Namespace, repo, tag)
+	case "acr":
+		newImage = fmt.Sprintf("registry.%s.aliyuncs.com/%s/%s:%s", u.options.Region, u.options.Namespace, repo, tag)
+	case "tcr":
+		newImage = fmt.Sprintf("ccr.ccs.tencentyun.com/%s/%s:%s", u.options.Namespace, repo, tag)
+	default:
+		return fmt.Errorf("unsupported registry: %s", u.options.Registry)
+	}
 	fmt.Printf("Tagging image as %q...\n", newImage)
 	cmd = exec.Command("docker", "tag", image, newImage)
 	if err := runCmd(cmd); err != nil {
@@ -78,16 +95,22 @@ func (u *Up) Execute(image string) error {
 	}
 
 	// Push the image to SWR
-	fmt.Printf("Pushing image %q to SWR...\n", newImage)
+	fmt.Printf("Pushing image %q to %s...\n", newImage, u.options.Registry)
 	cmd = exec.Command("docker", "push", newImage)
 	if err := runCmd(cmd); err != nil {
 		return fmt.Errorf("failed to push image %q: %w", newImage, err)
 	}
 
-	// Register the image to SWR
-	fmt.Printf("Setting repository %q/%q as public...\n", u.options.Namespace, repo)
-	if err := u.swrService.UpdateRepoPublic(u.options.Namespace, repo); err != nil {
-		return fmt.Errorf("failed to update repository %q/%q to public: %w", u.options.Namespace, repo, err)
+	if u.options.Public {
+		fmt.Printf("Setting repository %q/%q as public...\n", u.options.Namespace, repo)
+		switch u.options.Registry {
+		case "swr":
+			if err := u.swrService.UpdateRepoPublic(u.options.Namespace, repo); err != nil {
+				return fmt.Errorf("failed to update repository %q/%q to public: %w", u.options.Namespace, repo, err)
+			}
+		default:
+			fmt.Printf("The registry %s does not support public repositories.\n", u.options.Registry)
+		}
 	}
 
 	fmt.Printf("✅ Successfully synced image %q to %q\n", image, newImage)

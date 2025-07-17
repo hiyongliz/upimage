@@ -14,6 +14,7 @@ import (
 var (
 	region          string
 	namespace       string
+	registry        string // Added registry variable
 	public          bool
 	createNamespace bool
 	Opts            app.UpOptions
@@ -26,11 +27,19 @@ var rootCmd = &cobra.Command{
 	Example: `  upimage myregistry/myimage:latest,`,
 	Args:    cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
+		// Initialize options with command line flags
+		// Validate required options
+		if registry != "swr" && registry != "acr" && registry != "tcr" {
+			fmt.Fprintf(os.Stderr, "Invalid registry: %s. Supported values are 'swr', 'acr' or 'tcr'.\n", registry)
+			os.Exit(1)
+		}
+
 		Opts = app.UpOptions{
 			Region:          region,
 			Namespace:       namespace,
 			Public:          public,
 			CreateNamespace: createNamespace,
+			Registry:        registry,
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
@@ -52,8 +61,9 @@ func Execute() error {
 
 func init() {
 	rootCmd.Flags().SortFlags = true
-	rootCmd.Flags().StringVarP(&region, "region", "r", "cn-south-1", "SWR region, default is cn-south-1")
-	rootCmd.Flags().StringVarP(&namespace, "namespace", "n", "default", "namespace, default is default")
+	rootCmd.Flags().StringVarP(&region, "region", "r", "cn-south-1", "Registry region, default is cn-south-1")
+	rootCmd.Flags().StringVarP(&namespace, "namespace", "n", "default", "Registry namespace, default is default")
 	rootCmd.Flags().BoolVar(&createNamespace, "create-namespace", true, "create namespace if not exists, default is true")
 	rootCmd.Flags().BoolVar(&public, "public", false, "public image, default is false")
+	rootCmd.Flags().StringVarP(&registry, "registry", "g", "swr", "Registry, default is swr")
 }
