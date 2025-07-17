@@ -8,6 +8,15 @@ on:
       - '.github/workflows/sync.yaml'
   workflow_dispatch:
     inputs:
+      acr_region:
+        description: 'Target ACR region'
+        required: false
+        default: 'cn-shenzhen'
+        type: choice
+        options:
+          - cn-shenzhen
+          - cn-hangzhou
+          - cn-beijing
       region:
         description: 'Target SWR region'
         required: false
@@ -32,6 +41,7 @@ on:
 env:
   GO_VERSION: '1.24'
   REGION: ${{ github.event.inputs.region || 'cn-south-1' }}
+  ACR_REGION: ${{ github.event.inputs.acr_region || 'cn-shenzhen' }}
   NAMESPACE: ${{ github.event.inputs.namespace || 'lazylibrary' }}
   IMAGE_FILE: ${{ github.event.inputs.image_file || 'image.txt' }}
 
@@ -117,6 +127,20 @@ jobs:
                        -p "${{ secrets.SWR_REGISTRY_PASSWORD }}" \
                        "swr.cn-south-1.myhuaweicloud.com"
 
+      - name: Log in to Aliyun ACR
+        run: |
+          echo "Logging in to Aliyun ACR..."
+          docker login -u "${{ secrets.ACR_REGISTRY_USER }}" \
+                       -p "${{ secrets.ACR_REGISTRY_PASSWORD }}" \
+                       "registry.cn-shenzhen.aliyuncs.com"
+
+      - name: Log in to Tencent Cloud TCR
+        run: |
+          echo "Logging in to Tencent Cloud TCR..."
+          docker login -u "${{ secrets.TCR_REGISTRY_USER }}" \
+                       -p "${{ secrets.TCR_REGISTRY_PASSWORD }}" \
+                       "ccr.ccs.tencentyun.com"
+
       - name: Sync images to SWR
         env:
           HUAWEICLOUD_SDK_AK: ${{ secrets.HUAWEICLOUD_SDK_AK }}
@@ -130,7 +154,31 @@ jobs:
           echo
           
           chmod +x sync.sh
-          ./sync.sh "$IMAGE_FILE" "$REGION" "$NAMESPACE"
+          ./sync.sh "$IMAGE_FILE" "$REGION" "$NAMESPACE" swr
+
+      - name: Sync images to ACR
+        run: |
+          echo "Starting image sync process..."
+          echo "Target region: $ACR_REGION"
+          echo "Target namespace: $NAMESPACE"
+          echo "Image file: $IMAGE_FILE"
+          echo "Total images to sync: ${{ needs.validate.outputs.image-count }}"
+          echo
+          
+          chmod +x sync.sh
+          ./sync.sh "$IMAGE_FILE" "$ACR_REGION" "$NAMESPACE" acr
+
+      - name: Sync images to TCR
+        run: |
+          echo "Starting image sync process..."
+          echo "Target region: $REGION"
+          echo "Target namespace: $NAMESPACE"
+          echo "Image file: $IMAGE_FILE"
+          echo "Total images to sync: ${{ needs.validate.outputs.image-count }}"
+          echo
+          
+          chmod +x sync.sh
+          ./sync.sh "$IMAGE_FILE" "$REGION" "$NAMESPACE" tcr
 
       - name: Upload sync logs
         if: always()

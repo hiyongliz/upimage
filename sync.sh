@@ -17,6 +17,7 @@ IMAGE_FILE="${1:-image.txt}"
 REGION="${2:-cn-south-1}"
 NAMESPACE="${3:-default}"
 UPIMAGE_BINARY="./upimage"
+REGISTRY="${4:-swr}" # Default to SWR, can be acr or tcr
 
 # Logging functions
 log_info() {
@@ -100,7 +101,7 @@ sync_images() {
         log_info "Processing image [$total_count]: $image"
 
         # Run upimage with error handling
-        if $UPIMAGE_BINARY "$image" --region "$REGION" --namespace "$NAMESPACE"; then
+        if $UPIMAGE_BINARY "$image" --region "$REGION" --namespace "$NAMESPACE" --registry "$REGISTRY"; then
             success_count=$((success_count + 1))
             log_success "Successfully synced: $image"
         else

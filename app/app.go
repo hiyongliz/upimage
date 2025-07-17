@@ -56,12 +56,13 @@ func (u *Up) Execute(image string) error {
 	}
 
 	fmt.Printf("Processing image: %s\n", image)
+	fmt.Printf("  Registry: %s\n", u.options.Registry)
 	fmt.Printf("  Namespace: %s\n", u.options.Namespace)
 	fmt.Printf("  Repository: %s\n", repo)
 	fmt.Printf("  Tag: %s\n", tag)
 	fmt.Printf("  Target region: %s\n", u.options.Region)
 
-	if u.options.CreateNamespace {
+	if u.options.CreateNamespace && u.options.Registry == "swr" {
 		// Create SWR namespace if it doesn't exist
 		fmt.Printf("Creating namespace %q if it doesn't exist...\n", u.options.Namespace)
 		if err := u.swrService.CreateNamespace(u.options.Namespace); err != nil {
