@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # sync.sh - Batch sync Docker images to Huawei Cloud SWR
-# Usage: ./sync.sh [image_list_file] [region] [namespace]
+# Usage: ./sync.sh [image_list_file] [region] [namespace] [registry]
 
 set -euo pipefail
 
