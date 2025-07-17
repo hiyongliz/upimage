@@ -62,6 +62,10 @@ check_image_file() {
 
 # Check required environment variables
 check_env() {
+    if [[ "${REGISTRY}" != "swr" ]]; then
+        return
+    fi
+
     if [[ -z "${HUAWEICLOUD_SDK_AK:-}" ]]; then
         log_error "HUAWEICLOUD_SDK_AK environment variable is not set"
         exit 1
