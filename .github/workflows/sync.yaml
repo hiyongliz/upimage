@@ -141,20 +141,20 @@ jobs:
                        -p "${{ secrets.TCR_REGISTRY_PASSWORD }}" \
                        "ccr.ccs.tencentyun.com"
 
-      - name: Sync images to SWR
-        env:
-          HUAWEICLOUD_SDK_AK: ${{ secrets.HUAWEICLOUD_SDK_AK }}
-          HUAWEICLOUD_SDK_SK: ${{ secrets.HUAWEICLOUD_SDK_SK }}
-        run: |
-          echo "Starting image sync process..."
-          echo "Target region: $REGION"
-          echo "Target namespace: $NAMESPACE"
-          echo "Image file: $IMAGE_FILE"
-          echo "Total images to sync: ${{ needs.validate.outputs.image-count }}"
-          echo
+      # - name: Sync images to SWR
+      #   env:
+      #     HUAWEICLOUD_SDK_AK: ${{ secrets.HUAWEICLOUD_SDK_AK }}
+      #     HUAWEICLOUD_SDK_SK: ${{ secrets.HUAWEICLOUD_SDK_SK }}
+      #   run: |
+      #     echo "Starting image sync process..."
+      #     echo "Target region: $REGION"
+      #     echo "Target namespace: $NAMESPACE"
+      #     echo "Image file: $IMAGE_FILE"
+      #     echo "Total images to sync: ${{ needs.validate.outputs.image-count }}"
+      #     echo
           
-          chmod +x sync.sh
-          ./sync.sh "$IMAGE_FILE" "$REGION" "$NAMESPACE" swr
+      #     chmod +x sync.sh
+      #     ./sync.sh "$IMAGE_FILE" "$REGION" "$NAMESPACE" swr
 
       - name: Sync images to ACR
         run: |
