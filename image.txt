@@ -1,11 +1,1 @@
-langgenius/dify-api:1.6.0
-langgenius/dify-plugin-daemon:0.1.3-local
-docker.io/bitnami/postgresql:15.3.0-debian-11-r7
-docker.io/bitnami/postgresql:15.3.0-debian-11-r7
-nginx:latest
-docker.io/bitnami/redis:7.0.11-debian-11-r12
-docker.io/bitnami/redis:7.0.11-debian-11-r12
-langgenius/dify-sandbox:0.2.12
-langgenius/dify-web:1.6.0
-langgenius/dify-api:1.6.0
-docker.io/semitechnologies/weaviate:1.19.1
+postgres:15-alpine
