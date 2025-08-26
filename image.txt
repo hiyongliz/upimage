@@ -1,1 +1,1 @@
-docker.io/istio/proxyv2:1.23.2
+bitnami/kubectl:1.28
