@@ -1,1 +1,1 @@
-bitnami/kubectl:1.28
+ghcr.io/kube-vip/kube-vip:v0.6.3
