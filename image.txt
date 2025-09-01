@@ -1,1 +1,1 @@
-ghcr.io/kube-vip/kube-vip:v0.6.3
+docker.io/calico/cni:v3.28.0
