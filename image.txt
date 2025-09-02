@@ -1,1 +1,1 @@
-registry.k8s.io/ingress-nginx/controller:v1.12.6
+registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.6.2
