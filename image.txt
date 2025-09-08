@@ -1,1 +1,1 @@
-redis:7.4.5
+openjdk:17.0.2-oraclelinux8
