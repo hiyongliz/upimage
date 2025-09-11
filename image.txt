@@ -1,1 +1,1 @@
-jenkins:2.462.1-jdk17
+jenkins/jenkins:2.462.1-jdk17
