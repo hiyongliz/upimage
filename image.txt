@@ -1,2 +1,2 @@
-docker.io/kiwigrid/k8s-sidecar:1.30.7
-jenkins/jenkins:2.516.2-jdk21
+jenkins/inbound-agent:alpine
+node:alpine
