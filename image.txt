@@ -1,1 +1,2 @@
-emqx/emqx-operator-controller:2.2.29
+emqx:4.4.19
+emqx/emqx-operator-reloader:0.0.2
