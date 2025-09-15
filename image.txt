@@ -1,2 +1,1 @@
-jenkins/inbound-agent:alpine
-node:alpine
+tdengine/tdengine:3.2.3.0
