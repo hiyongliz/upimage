@@ -1,1 +1,5 @@
-docker.io/bitnami/zookeeper:3.6.2
+apache/dolphinscheduler-alert-server:3.2.2
+apache/dolphinscheduler-api:3.2.2
+apache/dolphinscheduler-tools:3.2.2
+apache/dolphinscheduler-master:3.2.2
+apache/dolphinscheduler-worker:3.2.2
