@@ -1,2 +1,7 @@
-registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.17.0
-docker.io/grafana/grafana:12.1.1
+docker.io/grafana/loki-canary:3.5.3
+docker.io/grafana/loki:3.5.5
+docker.io/kiwigrid/k8s-sidecar:1.30.10
+docker.io/nginxinc/nginx-unprivileged:1.29-alpine
+memcached:1.6.39-alpine
+prom/memcached-exporter:v0.15.3
+quay.io/minio/minio:RELEASE.2024-12-18T13-15-44Z
