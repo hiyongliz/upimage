@@ -1,2 +1,1 @@
-ubuntu:22.04
-astral/uv:0.9.5
+ghcr.io/dexidp/dex:v2.43.0
