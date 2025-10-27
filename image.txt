@@ -1,2 +1,2 @@
-docker.io/grafana/promtail:2.9.3
-grafana/loki:2.6.1
+ubuntu:22.04
+astral/uv:0.9.5
