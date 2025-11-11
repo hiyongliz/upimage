@@ -1,1 +1,1 @@
-docker.io/library/node:22.21.0-alpine
+alpine:3.22.0
