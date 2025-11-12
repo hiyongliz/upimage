@@ -1,2 +1,2 @@
 ghcr.io/cloudnative-pg/cloudnative-pg:1.27.0
-ghcr.io/cloudnative-pg/cloudnative-pg:1.13.0
+ghcr.io/cloudnative-pg/postgresql:13.4
