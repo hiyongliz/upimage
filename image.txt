@@ -1,1 +1,2 @@
-n8nio/base:22.21.0
+ghcr.io/cloudnative-pg/cloudnative-pg:1.27.0
+ghcr.io/cloudnative-pg/cloudnative-pg:1.13.0
