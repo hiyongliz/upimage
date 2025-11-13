@@ -1,1 +1,1 @@
-node:22
+openjdk:8
