@@ -1,1 +1,1 @@
-openjdk:8
+openjdk:8u212-jre-slim
