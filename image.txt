@@ -1,1 +1,1 @@
-openjdk:8u212-jre-slim
+nginx:1.29.1
