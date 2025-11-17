@@ -118,12 +118,12 @@ sync_images() {
         # Run upimage with error handling
         if $UPIMAGE_BINARY "$image" --region "$REGION" --namespace "$NAMESPACE" --registry "$REGISTRY"; then
             success_count=$((success_count + 1))
-            log_success "Successfully synced: $image"
-            send_telegram "Successfully synced: $image"
+            log_success "Successfully synced to $REGISTRY: $image"
+            send_telegram "Successfully synced to $REGISTRY: $image"
         else
-            log_error "Failed to sync: $image"
+            log_error "Failed to sync to $REGISTRY: $image"
             failed_images+=("$image")
-            send_telegram "Failed to sync: $image"    
+            send_telegram "Failed to sync to $REGISTRY: $image"    
         fi
         echo
     done < "$IMAGE_FILE"
