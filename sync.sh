@@ -77,17 +77,6 @@ check_env() {
     fi
 }
 
-# Send messages to telegram
-send_telegram() {
-    local message="$1"
-    if [[ -n "${TG_BOT_TOKEN:-}" && -n "${TG_CHAT_ID:-}" ]]; then
-        curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
-            -d chat_id="${TG_CHAT_ID}" \
-            -d text="$message" > /dev/null
-    fi
-}
-
-
 # Process images
 sync_images() {
     local total_count=0
@@ -119,11 +108,9 @@ sync_images() {
         if $UPIMAGE_BINARY "$image" --region "$REGION" --namespace "$NAMESPACE" --registry "$REGISTRY"; then
             success_count=$((success_count + 1))
             log_success "Successfully synced to $REGISTRY: $image"
-            send_telegram "Successfully synced to $REGISTRY: $image"
         else
             log_error "Failed to sync to $REGISTRY: $image"
             failed_images+=("$image")
-            send_telegram "Failed to sync to $REGISTRY: $image"    
         fi
         echo
     done < "$IMAGE_FILE"

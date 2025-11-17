@@ -95,10 +95,12 @@ func (u *Up) Execute(image string) error {
 		return fmt.Errorf("failed to tag image %q as %q: %w", image, newImage, err)
 	}
 
-	// Push the image to SWR
+	// Push the image to the target registry
 	fmt.Printf("Pushing image %q to %s...\n", newImage, u.options.Registry)
 	cmd = exec.Command("docker", "push", newImage)
 	if err := runCmd(cmd); err != nil {
+		errMessage := fmt.Sprintf("failed to push image %q", newImage)
+		utils.SendMessageToTGBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHAT_ID"), errMessage)
 		return fmt.Errorf("failed to push image %q: %w", newImage, err)
 	}
 
@@ -113,8 +115,10 @@ func (u *Up) Execute(image string) error {
 			fmt.Printf("The registry %s does not support public repositories.\n", u.options.Registry)
 		}
 	}
-
-	fmt.Printf("✅ Successfully synced image %q to %q\n", image, newImage)
+	// Send success message to Telegram Bot
+	message := fmt.Sprintf("✅ Successfully synced image %q to %q", image, newImage)
+	utils.SendMessageToTGBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHAT_ID"), message)
+	fmt.Println(message)
 	return nil
 }
 

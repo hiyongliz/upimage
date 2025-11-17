@@ -1,6 +1,9 @@
 package utils
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestGetNamespaceFromImage(t *testing.T) {
 	tests := []struct {
@@ -50,5 +53,17 @@ func TestGetRepoFromImage(t *testing.T) {
 				t.Errorf("expected repo: %s, got: %s", tt.repo, repo)
 			}
 		})
+	}
+}
+
+func TestSendMessageToTGBot(t *testing.T) {
+	// This is a placeholder test. In a real scenario, you would mock the HTTP client.
+	botToken := os.Getenv("TG_BOT_TOKEN")
+	chatID := os.Getenv("TG_CHAT_ID")
+	message := "Test message"
+
+	err := SendMessageToTGBot(botToken, chatID, message)
+	if err != nil {
+		t.Errorf("expected no error, got: %v", err)
 	}
 }
