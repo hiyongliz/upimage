@@ -2,7 +2,7 @@ name: Sync Docker Images to SWR
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, image-flow ]
     paths: 
       - 'image.txt'
       - '.github/workflows/sync.yaml'
