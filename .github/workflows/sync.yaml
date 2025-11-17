@@ -44,6 +44,8 @@ env:
   ACR_REGION: ${{ github.event.inputs.acr_region || 'cn-shenzhen' }}
   NAMESPACE: ${{ github.event.inputs.namespace || 'lazylibrary' }}
   IMAGE_FILE: ${{ github.event.inputs.image_file || 'image.txt' }}
+  TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+  TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
 
 jobs:
   validate:
