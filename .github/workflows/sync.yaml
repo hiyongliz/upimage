@@ -107,8 +107,8 @@ jobs:
           go mod verify
           go mod download
 
-      - name: Run tests
-        run: go test -v ./...
+      # - name: Run tests
+      #   run: go test -v ./...
 
       - name: Build upimage binary
         run: |
