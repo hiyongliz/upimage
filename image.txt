@@ -1,1 +1,1 @@
-postgres:17.7-alpine3.22
+ghcr.io/cloudnative-pg/postgresql:17
