@@ -1,1 +1,2 @@
-ghcr.io/cloudnative-pg/postgresql:17
+node:22-alpine
+python:3.13-slim
