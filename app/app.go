@@ -71,7 +71,10 @@ func (u *Up) Execute(image string) error {
 	}
 
 	// Download the image
-	fmt.Printf("Pulling image %q...\n", image)
+	pullMsg := fmt.Sprintf("Starting to pull image %q...", image)
+	fmt.Println(pullMsg)
+	utils.SendMessageToTGBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHAT_ID"), pullMsg)
+
 	cmd := exec.Command("docker", "pull", image)
 	if err := runCmd(cmd); err != nil {
 		return fmt.Errorf("failed to pull image %q: %w", image, err)
