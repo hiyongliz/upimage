@@ -7,6 +7,7 @@ import (
 
 	"github.com/charmbracelet/fang"
 	"github.com/hiyongliz/upimage/app"
+	"github.com/hiyongliz/upimage/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -46,10 +47,12 @@ var rootCmd = &cobra.Command{
 		up, err := app.NewUp(Opts)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error initializing upimage: %v\n", err)
+			utils.SendMessageToTGBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHAT_ID"), fmt.Sprintf("Error initializing upimage: %v", err))
 			os.Exit(1)
 		}
 		if err := up.Execute(args[0]); err != nil {
 			fmt.Fprintf(os.Stderr, "Error executing upimage: %v\n", err)
+			utils.SendMessageToTGBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHAT_ID"), fmt.Sprintf("Error executing upimage: %v", err))
 			os.Exit(1)
 		}
 	},
