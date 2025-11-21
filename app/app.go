@@ -71,7 +71,7 @@ func (u *Up) Execute(image string) error {
 	}
 
 	// Download the image
-	pullMsg := fmt.Sprintf("Starting to pull image %q...", image)
+	pullMsg := fmt.Sprintf("Starting to pull image %q... to %s", image, u.options.Registry)
 	fmt.Println(pullMsg)
 	utils.SendMessageToTGBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHAT_ID"), pullMsg)
 
@@ -102,8 +102,6 @@ func (u *Up) Execute(image string) error {
 	fmt.Printf("Pushing image %q to %s...\n", newImage, u.options.Registry)
 	cmd = exec.Command("docker", "push", newImage)
 	if err := runCmd(cmd); err != nil {
-		errMessage := fmt.Sprintf("failed to push image %q", newImage)
-		utils.SendMessageToTGBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHAT_ID"), errMessage)
 		return fmt.Errorf("failed to push image %q: %w", newImage, err)
 	}
 
