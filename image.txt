@@ -1,1 +1,1 @@
-nginx:alpine
+uv:0.9
