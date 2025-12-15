@@ -1,1 +1,12 @@
-apache/hadoop:3.3.6
+bitnami/spark:3
+mongo:4.4
+bitnami/postgresql:15.2.0
+bitnami/zookeeper:3.7.1
+docker.io/bitnami/spark:3
+redis:6-alpine
+rabbitmq:3.12-management
+dm8:dm8_20250506_x86_rh7_64
+apache/dolphinscheduler-worker:latest
+apache/dolphinscheduler-alert-server:latest
+apache/dolphinscheduler-api:latest
+apache/dolphinscheduler-master:latest
