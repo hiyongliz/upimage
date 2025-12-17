@@ -1,1 +1,1 @@
-openjdk:17.0.2-jdk-slim
+ingress-nginx/controller:v1.14.1
