@@ -1,1 +1,1 @@
-registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.6.5
+ghcr.io/astral-sh/uv:0.9.18
