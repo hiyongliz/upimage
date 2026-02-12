@@ -1,1 +1,1 @@
-node:16.15.0
+emqx/mqttx-web:v1.13.0
