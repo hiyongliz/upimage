@@ -1,1 +1,1 @@
-nexiot/mysql8:2.1
+redis:7-alpine
