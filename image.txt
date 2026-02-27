@@ -1,1 +1,1 @@
-nexiot/enterprise-temp-back:2.1
+ubuntu:22.04
