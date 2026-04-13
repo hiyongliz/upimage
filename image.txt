@@ -1,1 +1,1 @@
-grafana/grafana:12.4.2
+easysoft/zentao:22.0-20260319-php7
