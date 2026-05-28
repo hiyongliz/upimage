@@ -1,1 +1,1 @@
-easysoft/zentao:22.0-20260319-php7
+quay.io/soketi/soketi:1.4-16-debian
