@@ -1,1 +1,1 @@
-python:3.14-slim
+gcr.io/distroless/static-debian12:nonroot
