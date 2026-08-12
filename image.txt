@@ -1,1 +1,1 @@
-gcr.io/distroless/static-debian12:nonroot
+mysql:8.0.36
