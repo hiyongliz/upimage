@@ -1,1 +1,1 @@
-openjdk:17.0.2-oraclelinux8
+python:3.14.7-slim
